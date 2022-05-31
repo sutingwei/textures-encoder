@@ -1,0 +1,6 @@
+[submodule ".\\3rd\\astc-encoder"]
+	path = .\\3rd\\astc-encoder
+	url = https://github.com/ARM-software/astc-encoder.git
+[submodule ".\\3rd\\etc2comp"]
+	path = .\\3rd\\etc2comp
+	url = https://github.com/google/etc2comp.git
