@@ -12,6 +12,10 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /utf-8")   # msvc fix __cplusplus
 endif()
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(MACOSX TRUE)
+endif()
+
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DBX_CONFIG_DEBUG -D__STDC_LIMIT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_CONSTANT_MACROS -DUSE_STB_IMAGE_LOAD")
 
 FILE(GLOB bxSrc 3rd/bx/src/*.cpp)
@@ -23,10 +27,16 @@ FILE(GLOB lodepngSrc 3rd/etc2comp/third_party/lodepng/*.cpp)
 
 add_executable(textures_encoder textures_encoder.cpp ${bxSrc} ${etcToolSrc} ${lodepngSrc})
 
+if (MSVC)
+    set(bxCompatSrc ./3rd/bx/include/compat/msvc)
+elseif(${MACOSX})
+    set(bxCompatSrc ./3rd/bx/include/compat/osx)
+endif()
+
 target_include_directories(textures_encoder PUBLIC
         ./
         ./3rd/bx/include
-        ./3rd/bx/include/compat/msvc
+        ${bxCompatSrc}
         ./3rd/bx/3rdparty
         ./3rd/etc2comp/EtcTool
         ./3rd/etc2comp/EtcLib/Etc
@@ -34,3 +44,7 @@ target_include_directories(textures_encoder PUBLIC
         ./3rd/etc2comp/third_party/lodepng)
 
 target_link_libraries(textures_encoder PUBLIC EtcLib)
+
+if (${MACOSX})
+    target_link_libraries(textures_encoder PUBLIC "-framework CoreFoundation" "-framework Foundation")
+endif()
