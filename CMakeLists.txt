@@ -21,11 +21,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DBX_CONFIG_DEBUG -D__STDC_L
 FILE(GLOB bxSrc 3rd/bx/src/*.cpp)
 list(FILTER bxSrc EXCLUDE REGEX amalgamated)
 
-FILE(GLOB etcToolSrc 3rd/etc2comp/EtcTool/*.cpp)
-#list(FILTER etcToolSrc EXCLUDE REGEX EtcTool/EtcTool)
-FILE(GLOB lodepngSrc 3rd/etc2comp/third_party/lodepng/*.cpp)
-
-add_executable(textures_encoder textures_encoder.cpp ${bxSrc} ${etcToolSrc} ${lodepngSrc})
+add_executable(textures_encoder textures_encoder.cpp ${bxSrc})
 
 if (MSVC)
     set(bxCompatSrc ./3rd/bx/include/compat/msvc)
@@ -37,14 +33,20 @@ target_include_directories(textures_encoder PUBLIC
         ./
         ./3rd/bx/include
         ${bxCompatSrc}
-        ./3rd/bx/3rdparty
-        ./3rd/etc2comp/EtcTool
-        ./3rd/etc2comp/EtcLib/Etc
-        ./3rd/etc2comp/EtcLib/EtcCodec
-        ./3rd/etc2comp/third_party/lodepng)
-
-target_link_libraries(textures_encoder PUBLIC EtcLib)
+        ./3rd/bx/3rdparty)
 
 if (${MACOSX})
     target_link_libraries(textures_encoder PUBLIC "-framework CoreFoundation" "-framework Foundation")
 endif()
+
+# copy bin
+if (MSVC)
+add_custom_target(
+        copy3rdTarget
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/bin/win/astcenc-native.exe ${CMAKE_CURRENT_BINARY_DIR}/astcenc-native.exe
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/bin/win/EtcTool.exe ${CMAKE_CURRENT_BINARY_DIR}/EtcTool.exe
+)
+elseif()
+endif()
+
+add_dependencies(textures_encoder copy3rdTarget)
