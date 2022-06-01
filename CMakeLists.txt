@@ -46,7 +46,12 @@ add_custom_target(
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/bin/win/astcenc-native.exe ${CMAKE_CURRENT_BINARY_DIR}/astcenc-native.exe
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/bin/win/EtcTool.exe ${CMAKE_CURRENT_BINARY_DIR}/EtcTool.exe
 )
-elseif()
+elseif(${MACOSX})
+    add_custom_target(
+            copy3rdTarget
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/bin/osx/astcenc-native ${CMAKE_CURRENT_BINARY_DIR}/astcenc-native
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/bin/osx/EtcTool ${CMAKE_CURRENT_BINARY_DIR}/EtcTool
+    )
 endif()
 
 add_dependencies(textures_encoder copy3rdTarget)

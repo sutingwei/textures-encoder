@@ -22,8 +22,8 @@ Basic usage:
             etc2 (etc2 commands)
             astc (astc commands)
 Example:
-           etc2 ..\Lenna.png -format RGB8 -output ..\Lenna.pkm -verbose
-           astc -cl ..\Lenna.png ..\Lenna.astc 6x6 -medium
+           etc2 ../Lenna.png -format RGB8 -output ../Lenna.pkm -verbose
+           astc -cl ../Lenna.png ../Lenna.astc 6x6 -medium
 )";
     printf("%s", help);
 }
@@ -48,11 +48,19 @@ int main(int argc, const char * argv[])
     char buffer[512];
     if (strcmp(compressType, "etc2") == 0)
     {
+#ifdef _WIN32
         snprintf (buffer, 512, "%s/EtcTool.exe", cwd.getPtr());
+#elif __APPLE__
+        snprintf (buffer, 512, "%sEtcTool", cwd.getPtr());
+#endif
     }
     else if (strcmp(compressType, "astc") == 0)
     {
+#ifdef _WIN32
         snprintf (buffer, 512, "%s/astcenc-native.exe", cwd.getPtr());
+#elif __APPLE__
+        snprintf (buffer, 512, "%sastcenc-native", cwd.getPtr());
+#endif
     }
     else
     {
@@ -61,7 +69,7 @@ int main(int argc, const char * argv[])
         exit(1);
     }
 
-    char** _argv = new char*[2];
+    char** _argv = new char*[argc];
     _argv[0] = buffer;
     for (int i = 2; i < argc; ++i) {
         _argv[i-1] = const_cast<char*>(argv[i]);
@@ -69,8 +77,12 @@ int main(int argc, const char * argv[])
     _argv[argc-1] = nullptr;
 
     void* handle = bx::exec(_argv);
-
+    if (handle) {
 #ifdef _WIN32
-    WaitForSingleObject(handle, -1);
+        WaitForSingleObject(handle, -1);
+#elif __APPLE__
+        int status;
+        wait(&status);
 #endif
+    }
 }
