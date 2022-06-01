@@ -9,3 +9,4 @@
 [submodule "3rd/bx"]
 	path = 3rd/bx
 	url = git@github.com:sutingwei/bx.git
+	branch = master
